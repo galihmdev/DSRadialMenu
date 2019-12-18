@@ -57,3 +57,55 @@ class RoundButton: UIButton {
     }
     
 }
+
+class DSItemView: UIView {
+    
+    @IBInspectable var cornerRadius: CGFloat = 6 {
+        didSet {
+            updateLayer()
+        }
+    }
+    
+    @IBInspectable var borderWidth: CGFloat = 0 {
+        didSet {
+            updateLayer()
+        }
+    }
+    
+    @IBInspectable var borderColor: UIColor? {
+        didSet {
+            updateLayer()
+        }
+    }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        updateLayer()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        updateLayer()
+    }
+    
+    required override init(frame: CGRect) {
+        super.init(frame: frame)
+        updateLayer()
+    }
+    
+    func updateLayer() {
+        layer.cornerRadius = cornerRadius
+        layer.masksToBounds = cornerRadius > 0
+        layer.borderWidth = borderWidth
+        layer.borderColor = borderColor?.cgColor
+    }
+    
+    override func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
+        updateLayer()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
+}

@@ -15,7 +15,7 @@ public protocol DSRadialMenuDelegate: class {
 
 open class DSRadialMenu: UIView {
     
-    public typealias MenuItem = (button: UIButton, position: MenuItemPosition)
+    public typealias MenuItem = (button: UIView, position: MenuItemPosition)
     
     @IBOutlet open weak var centerButton: UIButton!
     
@@ -65,6 +65,37 @@ open class DSRadialMenu: UIView {
         sendSubviewToBack(button)
         addButtonConstraints(button, size: size)
         let menuItem = MenuItem(button, position)
+        menuItems.append(menuItem)
+        if state == .open {
+            animateMenuItemOut(menuItem)
+        }
+        return menuItem.button as! T
+    }
+    
+    open func addMenuItemView<T: UIView>(_ title: String, position: MenuItemPosition, size: CGSize) -> T {
+        let view = T(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        view.isUserInteractionEnabled = true
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        //button.setTitle(title, for: UIControl.State())
+        //button.backgroundColor = UIColor.brown
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        button.addTarget(self, action: #selector(DSRadialMenu.menuItemButtonTapped(_:)), for: .touchUpInside)
+        addSubview(view)
+        sendSubviewToBack(view)
+        addButtonConstraints(view, size: size)
+        view.addSubview(button)
+        view.bringSubviewToFront(button)
+        
+        /*
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.topAnchor.constraint(equalTo: button.superview!.topAnchor, constant: 10).isActive = true
+        button.bottomAnchor.constraint(equalTo: button.superview!.bottomAnchor, constant: 0).isActive = true
+        button.leadingAnchor.constraint(equalTo: button.superview!.leadingAnchor, constant: 0).isActive = true
+        button.trailingAnchor.constraint(equalTo: button.superview!.trailingAnchor, constant: 0).isActive = true
+         */
+        
+        let menuItem = MenuItem(view, position)
         menuItems.append(menuItem)
         if state == .open {
             animateMenuItemOut(menuItem)
@@ -151,7 +182,7 @@ open class DSRadialMenu: UIView {
         return point
     }
     
-    func addButtonConstraints(_ button: UIButton, size: CGSize) {
+    func addButtonConstraints(_ button: UIView, size: CGSize) {
         NSLayoutConstraint.activate([
             NSLayoutConstraint(item: button, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: size.width),
             NSLayoutConstraint(item: button, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: size.height),
@@ -172,8 +203,30 @@ open class DSRadialMenu: UIView {
     }
     
     @objc func menuItemButtonTapped(_ button: UIButton) {
+        /*
         let menuItem = menuItems.filter { $0.button == button }.first
         if let menuItem = menuItem {
+            delegate?.menuItemTapped(menuItem)
+        }
+         */
+        
+        if let menuItem = menuItems.first(where: { (existedMenuItem) -> Bool in
+            if let itemButton = existedMenuItem.button as? UIButton, itemButton == button {
+                return true
+            }
+            else {
+                if let _ = existedMenuItem.button.subviews.first as? UIButton {
+                    return true
+                }
+                else {
+                    let array = existedMenuItem.button.subviews
+                    if array.count >= 2, let _ = array[1] as? UIButton {
+                        return true
+                    }
+                }
+            }
+            return false
+        }) {
             delegate?.menuItemTapped(menuItem)
         }
     }

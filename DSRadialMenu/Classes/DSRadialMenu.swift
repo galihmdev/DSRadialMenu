@@ -22,7 +22,7 @@ open class DSRadialMenu: UIView {
     @IBInspectable open var menuItemSize = CGSize(width: 50, height: 50)
     @IBInspectable open var distanceFromCenter: Double = 100
     
-    var distanceBetweenMenuItems: Double = 30
+    @IBInspectable open var distanceBetweenMenuItems: Double = 30
     
     open fileprivate(set) var menuItems = [MenuItem]()
     open fileprivate(set) var state: MenuState = .closed

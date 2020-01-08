@@ -81,6 +81,7 @@ open class DSRadialMenu: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isHidden = true
         button.addTarget(self, action: #selector(DSRadialMenu.menuItemButtonTapped(_:)), for: .touchUpInside)
+        //button.tag = position.rawValue
         addSubview(view)
         sendSubviewToBack(view)
         addButtonConstraints(view, size: size)
@@ -215,12 +216,12 @@ open class DSRadialMenu: UIView {
                 return true
             }
             else {
-                if let _ = existedMenuItem.button.subviews.first as? UIButton {
+                if let itemButton = existedMenuItem.button.subviews.first as? UIButton, itemButton == button {
                     return true
                 }
                 else {
                     let array = existedMenuItem.button.subviews
-                    if array.count >= 2, let _ = array[1] as? UIButton {
+                    if array.count >= 2, let itemButton = array[1] as? UIButton, itemButton == button {
                         return true
                     }
                 }
